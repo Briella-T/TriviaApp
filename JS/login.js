@@ -18,6 +18,10 @@ function sendLogin(event) {
     if (usernameInput === MOCK_USER.username && passwordInput === MOCK_USER.password) {
         messageDiv.textContent = 'Login successful!';
         messageDiv.classList.add('text-green-600');
+
+        setTimeout(() => {
+            window.location.href = 'main.html'; 
+        }, 1000);
     } else if (usernameInput === MOCK_USER.username && passwordInput !== MOCK_USER.password) {
         messageDiv.textContent = 'Incorrect password';
         messageDiv.classList.add('text-red-600');
