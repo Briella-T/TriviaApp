@@ -1,0 +1,1 @@
+This app is a basic trivia app using opentdb api to fetch the questions and answers. The app takes on a fall theme being named CozyQuiz and several creative choices that reference fall colors and themes
