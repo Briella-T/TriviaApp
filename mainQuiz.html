@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CozyQuiz: Rustic Cabin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="JS/quiz.js" defer></script>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6 bg-[#A14625] font-mono">
+
+    <div class="max-w-2xl w-full bg-stone-700 bg-opacity-95 rounded-2xl shadow-2xl p-8">
+        
+        <header class="text-center mb-8">
+            <h1 id="current-category" class="text-4xl font-extrabold text-[#E49732] mb-2"></h1>
+        </header>
+        <div class="flex justify-between items-center mb-6 px-2 text-[#E49732]">
+            <p class="text-sm font-medium">Question <span id="q-num">1</span> of <span id="q-total">10</span></p>
+            <p class="text-2xl font-bold text-green-700" id="score-display"></p>
+        </div>
+        <div id="question-display" class="question-box p-6 bg-amber-50 rounded-xl mb-8 text-center">
+            <p class="text-xl font-medium leading-relaxed text-gray-700">
+            </p>
+        </div>
+        <div id="answer-buttons-container" class="flex flex-col space-y-4">
+        </div>
+        
+    </div>
+</body>
+</html>
