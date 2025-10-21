@@ -30,7 +30,7 @@ function generateNumberOptions(max) {
         option.textContent = i;
         numberSelect.appendChild(option);
     }
-    numberSelect.value = 10;
+    numberSelect.value = 5;
 }
 
 function correctSelectOptions() {

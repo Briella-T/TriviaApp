@@ -9,6 +9,7 @@ const scoreDisplay = document.getElementById('score-display');
 const qNumDisplay = document.getElementById('q-num');
 const qTotalDisplay = document.getElementById('q-total');
 const categoryDisplay = document.getElementById('current-category');
+const timerDisplay = document.getElementById('timer-display');
 
 const decodeHTML = (html) => {
     const txt = document.createElement('textarea');
@@ -16,6 +17,32 @@ const decodeHTML = (html) => {
     return txt.value;
 };
 
+function startTimer(durationSeconds) {
+    let timeRemaining = durationSeconds;
+
+    if (timerInterval) clearInterval(timerInterval);
+
+    timerDisplay.textContent = `Time: ${timeRemaining}s`;
+
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        timerDisplay.textContent = `Time: ${timeRemaining}s`;
+
+        if (timeRemaining <= 5) {
+            timerDisplay.classList.add('text-red-500', 'font-bold');
+        } else {
+            timerDisplay.classList.remove('text-red-500', 'font-bold');
+        }
+
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            timerDisplay.textContent = `Time Up!`;
+
+            checkAnswer(false, null, decodeHTML(quizQuestions[currentQuestionIndex].correct_answer));
+        }
+    }, 1000);
+
+}
 
 function startQuizFromStorage() {
     const quizDataString = localStorage.getItem('currentQuizData');
@@ -104,5 +131,8 @@ function endQuiz() {
     restartBtn.onclick = () => window.location.href = 'main.html';
     answerButtonsContainer.appendChild(restartBtn);
 }
+
+
+
 
 document.addEventListener('DOMContentLoaded', startQuizFromStorage);
