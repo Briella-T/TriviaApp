@@ -2,6 +2,7 @@
 let quizQuestions = [];
 let currentQuestionIndex = 0;
 let currentScore = 0;
+let timerInterval = null;
 
 const questionDisplay = document.getElementById('question-display');
 const answerButtonsContainer = document.getElementById('answer-buttons-container');
@@ -20,7 +21,9 @@ const decodeHTML = (html) => {
 function startTimer(durationSeconds) {
     let timeRemaining = durationSeconds;
 
-    if (timerInterval) clearInterval(timerInterval);
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
 
     timerDisplay.textContent = `Time: ${timeRemaining}s`;
 
@@ -67,12 +70,18 @@ function displayQuestion() {
         return;
     }
 
+    timerDisplay.classList.remove('text-red-500', 'font-bold');
+
+    startTimer(10);
+
     const questionData = quizQuestions[currentQuestionIndex];
     
     qNumDisplay.textContent = currentQuestionIndex + 1;
     qTotalDisplay.textContent = quizQuestions.length;
     scoreDisplay.textContent = `Score: ${currentScore}`;
+
     questionDisplay.querySelector('p').innerHTML = decodeHTML(questionData.question);
+
     let answers = [questionData.correct_answer, ...questionData.incorrect_answers];
     answers = answers.map(decodeHTML); 
     answers.sort(() => Math.random() - 0.5); 
@@ -92,29 +101,49 @@ function displayQuestion() {
 }
 
 function checkAnswer(isCorrect, clickedButton, correctAnswerText) {
+    clearInterval(timerInterval);
+    timerDisplay.classList.remove('text-red-500', 'font-bold');
+
     Array.from(answerButtonsContainer.children).forEach(btn => btn.disabled = true);
+
+    const questionParagraph = questionDisplay.querySelector('p');
+
+    const feedbackSpan = document.createElement('span');
+    feedbackSpan.classList.add('mt-4', 'block', 'font-bold');
 
     if (isCorrect) {
         currentScore += 10;
         clickedButton.classList.remove('bg-amber-50', 'hover:bg-[#E49732]', 'text-gray-700');
         clickedButton.classList.add('bg-green-500', 'text-white');
     } else {
-        clickedButton.classList.remove('bg-amber-50', 'hover:bg-[#E49732]', 'text-gray-700');
-        clickedButton.classList.add('bg-red-500', 'text-white');
+
+        if (clickedButton) {
+            clickedButton.classList.remove('bg-amber-50', 'hover:bg-[#E49732]', 'text-gray-700');
+            clickedButton.classList.add('bg-red-500', 'text-white');
+        }
+
+        feedbackSpan.classList.add('text-red-600');
 
         Array.from(answerButtonsContainer.children).forEach(btn => {
             if (btn.innerHTML === correctAnswerText) {
                 btn.classList.remove('bg-amber-50', 'text-gray-700');
-                btn.classList.add('bg-green-500', 'text-white', 'border-4', 'border-green-700'); 
+                btn.classList.add('bg-green-500', 'text-white'); 
             }
         });
     }
+
+    questionDisplay.appendChild(feedbackSpan);
+
     setTimeout(() => {
+        questionDisplay.querySelector('p').innerHTML = '';
         currentQuestionIndex++;
         displayQuestion();
     }, 2000);
 }
 function endQuiz() {
+    clearInterval(timerInterval);
+    timerDisplay.textContent = 'Quiz Over';
+
     questionDisplay.querySelector('p').innerHTML = `
         <span class="text-4xl font-extrabold text-[#E49732]">Quiz Complete!</span>
     `;
@@ -131,8 +160,5 @@ function endQuiz() {
     restartBtn.onclick = () => window.location.href = 'main.html';
     answerButtonsContainer.appendChild(restartBtn);
 }
-
-
-
 
 document.addEventListener('DOMContentLoaded', startQuizFromStorage);
