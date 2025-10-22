@@ -3,6 +3,7 @@ let quizQuestions = [];
 let currentQuestionIndex = 0;
 let currentScore = 0;
 let timerInterval = null;
+let quizStartTime = Date.now();
 
 const questionDisplay = document.getElementById('question-display');
 const answerButtonsContainer = document.getElementById('answer-buttons-container');
@@ -140,9 +141,32 @@ function checkAnswer(isCorrect, clickedButton, correctAnswerText) {
         displayQuestion();
     }, 2000);
 }
+
 function endQuiz() {
     clearInterval(timerInterval);
     timerDisplay.textContent = 'Quiz Over';
+
+    const endMessageP = questionDisplay.querySelector('p');
+
+    const quizEndTime = Date.now();
+    const totalTimeSeconds = Math.round((quizEndTime - quizStartTime) / 1000);
+    const totalQuestions = quizQuestions.length;
+    const correctCount = currentScore / 10;
+    const totalPossibleScore = totalQuestions * 10;
+    const percentageScore = Math.round((currentScore / totalPossibleScore) * 100);
+    const categoryName = localStorage.getItem('currentCategoryName') || 'Unknown';
+
+    const finalStats = {
+        date: new Date().toLocaleString(),
+        category: categoryName,
+        score: currentScore,
+        totalQuestions : totalQuestions,
+        correctCount: correctCount,
+        percentage: percentageScore,
+        timeTaken: totalTimeSeconds
+    };
+
+    localStorage.setItem('tempFinalStats', JSON.stringify(finalStats));
 
     questionDisplay.querySelector('p').innerHTML = `
         <span class="text-4xl font-extrabold text-[#E49732]">Quiz Complete!</span>
@@ -150,15 +174,43 @@ function endQuiz() {
     
     answerButtonsContainer.innerHTML = `
         <p class="text-xl text-white font-bold mt-4">
-            Final Score: ${currentScore} / ${quizQuestions.length * 10}
+            Final Score: ${currentScore} / ${totalPossibleScore} (${percentageScore}%)<br>
+            Time Taken: ${totalTimeSeconds} seconds<br>
         </p>
     `;
-    
+
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = "Save Results";
+    saveBtn.className = "mt-6 bg-green-600 text-white py-3 px-6 rounded-full hover:bg-green-700 transition";
+    saveBtn.onclick = saveAndRedirect;
+
     const restartBtn = document.createElement('button');
-    restartBtn.textContent = "Start New Quiz";
+    restartBtn.textContent = "Start New Quiz (Don't Save)";
     restartBtn.className = "mt-6 bg-[#E49732] text-white py-3 px-6 rounded-full hover:bg-orange-500 transition";
     restartBtn.onclick = () => window.location.href = 'main.html';
+    answerButtonsContainer.appendChild(saveBtn);
     answerButtonsContainer.appendChild(restartBtn);
+}
+
+function saveAndRedirect() {
+    const finalStatsString = localStorage.getItem('tempFinalStats');
+    if (!finalStatsString) {
+        alert("Error: No quiz results to save.");
+        return;
+    }
+
+    const newStats = JSON.parse(finalStatsString);
+
+    const historyString = localStorage.getItem('quizHistory');
+    let history = historyString ? JSON.parse(historyString) : [];
+
+    history.unshift(newStats);
+
+    localStorage.setItem('quizHistory', JSON.stringify(history));
+
+    localStorage.removeItem('tempFinalStats');
+
+    window.location.href = 'stats.html';
 }
 
 document.addEventListener('DOMContentLoaded', startQuizFromStorage);
