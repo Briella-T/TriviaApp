@@ -4,6 +4,20 @@ function formatTime(seconds) {
     const secs = seconds % 60;
     return `${mins}m ${secs}s`;
 }
+function deleteGame(gameIndex) {
+    if (!confirm('Are you sure you want to delete this game from your history?')) {
+        return;
+    }
+
+    const historyString = localStorage.getItem('quizHistory');
+    let history = historyString ? JSON.parse(historyString) : [];
+
+    history.splice(gameIndex, 1);
+
+    localStorage.setItem('quizHistory', JSON.stringify(history));
+
+    loadHistoryStats();
+}
 
 function loadHistoryStats() {
     const historyString = localStorage.getItem('quizHistory');
@@ -27,7 +41,9 @@ function loadHistoryStats() {
 
     historyTableBody.innerHTML = ''; 
 
-    history.forEach(game => {
+    for (let i = 0; i < history.length; i++) {
+        const game = history[i];
+
         totalScoreSum += game.score;
         totalPossibleScoreSum += (game.totalQuestions * 10);
         
@@ -50,9 +66,19 @@ function loadHistoryStats() {
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 ${formatTime(game.timeTaken)}
             </td>
-        `;
-        historyTableBody.prepend(row);
-    });
+            `;
+
+            const deleteCell = document.createElement('td');
+            deleteCell.className = 'px-6 py-4 whitespace-nowrap text-sm';
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.className = 'text-white hover:bg-red-500 transition bg-red-700 rounded-xl p-2';
+            deleteButton.onclick = () => deleteGame(i);
+            deleteCell.appendChild(deleteButton);
+            row.appendChild(deleteCell);
+
+        historyTableBody.appendChild(row);
+    }
 
     const overallAverageScore = totalPossibleScoreSum > 0 
         ? Math.round((totalScoreSum / totalPossibleScoreSum) * 100) 

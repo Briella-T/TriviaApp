@@ -6,6 +6,8 @@ const selectedCatDisplay = document.getElementById('category-select');
 
 let categoryId = null;
 
+correctSelectOptions();
+
 function initializePage() {
     const params = new URLSearchParams(window.location.search);
     const storedId = params.get('category_id');
@@ -19,8 +21,6 @@ function initializePage() {
         categoryId = 9; 
     }
     generateNumberOptions(50);
-    
-    correctSelectOptions();
 }
 
 function generateNumberOptions(max) {
@@ -45,6 +45,11 @@ function correctSelectOptions() {
 
 async function fetchAndStoreQuiz(event) {
     event.preventDefault(); 
+
+    if (difficultySelect.value === "" || difficultySelect.value === "-- Select Difficulty --") {
+        alert("Please select a difficulty level.");
+        return;
+    }
     
     if (!categoryId || !difficultySelect.value || !numberSelect.value || !typeSelect.value) {
         alert("Please ensure all selections (difficulty, amount, type) are chosen.");
@@ -73,6 +78,7 @@ async function fetchAndStoreQuiz(event) {
 
         localStorage.setItem('currentQuizData', JSON.stringify(data.results));
         localStorage.setItem('currentCategoryName', selectedCatDisplay.textContent);
+        localStorage.setItem('quizDifficulty', difficulty);
         
         window.location.href = 'mainQuiz.html'; 
 

@@ -4,6 +4,7 @@ let currentQuestionIndex = 0;
 let currentScore = 0;
 let timerInterval = null;
 let quizStartTime = Date.now();
+let quizDifficulty = '';
 
 const questionDisplay = document.getElementById('question-display');
 const answerButtonsContainer = document.getElementById('answer-buttons-container');
@@ -51,6 +52,7 @@ function startTimer(durationSeconds) {
 function startQuizFromStorage() {
     const quizDataString = localStorage.getItem('currentQuizData');
     const categoryName = localStorage.getItem('currentCategoryName');
+    const difficulty = localStorage.getItem('quizDifficulty');
     
     if (!quizDataString) {
         alert("Error: No quiz was selected. Please choose a category and difficulty first.");
@@ -60,6 +62,8 @@ function startQuizFromStorage() {
 
     quizQuestions = JSON.parse(quizDataString);
     categoryDisplay.textContent = categoryName.toUpperCase();
+
+    quizDifficulty = difficulty || 'unknown';
 
     displayQuestion();
 }
@@ -159,6 +163,7 @@ function endQuiz() {
     const finalStats = {
         date: new Date().toLocaleString(),
         category: categoryName,
+        difficulty: quizDifficulty,
         score: currentScore,
         totalQuestions : totalQuestions,
         correctCount: correctCount,
